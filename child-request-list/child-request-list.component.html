@@ -1,0 +1,109 @@
+<div class="card mt-4">
+  <div class="card-body">
+    <!-- request form heading and serach bar starts -->
+    <div class="form-group col-md-12">
+      <h5>Request List</h5>
+    </div>
+    <div class="form-row">
+      <!-- request heading starts  -->
+      <div class="from-group col-md-6">
+        <label for="inputState">Daycare</label>
+        <select id="inputState" class="form-control mb-2" [(ngModel)]="selectedDaycareId" (change)="onDaycareChange()">
+          <option value=0 disabled selected="">Select Daycare</option>
+          <option *ngFor="let daycare of daycareList" [value]="daycare.id">{{daycare.name}}</option>
+        </select>
+      </div>
+
+
+      <!-- request heading ends -->
+      <!-- search bar starts  -->
+
+      <!-- search bar starts -->
+      <div class="from-group col-md-6">
+        <label for="inputState"></label>
+        <div class="input-group mt-2">
+          <input class="form-control border-secondary py-2" type="search" placeholder="Child and Parent Name"
+            [(ngModel)]="search_name" (ngModelChange)="onSearchChange()">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button">
+              <i class="fa fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- search bar ends -->
+
+    </div>
+
+    <!-- request form heading and search bar ends -->
+
+    <!-- request listing oin the form of accordian starts  -->
+    <div class="form-row">
+
+      <!-- accordian starts -->
+      <div id="accordion" class="accordionPanel col-md-12">
+        <div class="card mb-2 mt-2" *ngFor="let req of itemsToDisplay let i = index;">
+          <div class="card-header">
+            <div class="form-row">
+              <div class="form-group col-sm-8 mb-0">
+                <a [className]="'card-title pl-2 text-dark '+ (!isCollapsed && i==collapseindex?'':'collapsed')"
+                  (click)="collapse(isCollapsed,i)">
+                  Child Name: {{req.Child.name}} {{req.Child.lname}}
+<label class="status-margin"> {{req.req_status=='Enroll' ? '(ENROLLMENT)' : ''}}
+  {{req.req_status=='Withdraw' ? '(WITHDRAWAL)' : ''}}</label>
+
+                 
+                </a>
+              </div>
+              <div class="form-group col-sm-4 mb-0 text-right accept-media">
+                <button type="button" class="btn btn-success mr-1" (click)="onSatuschange(req,'Accepted')">Accept</button>
+                <button type="button" class="btn btn-danger" (click)="onSatuschange(req,'Rejected')">Reject</button>
+              </div>
+            </div>
+          </div>
+          <div [ngbCollapse]="(!isCollapsed && i==collapseindex?false:true)" class="collapse" data-parent="#accordion1">
+            <div class="card-body">
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label>Parent Name: <span>{{req.Parent.fname}} {{req.Parent.lname}}</span></label><br>
+                  <label>Daycare: <span>{{req.Daycare.name}}</span></label><br>
+                  <label *ngIf="req.Parent && req.Parent.phone" class="mb-0">
+                    Phone: <span>{{req.Parent.phone}}</span></label><br>
+                  <!-- <a class="text-active" routerLink="/daycare/family/family-info/{{req.ParentId}}/{{req.ChildId}}/{{req.DaycareId}}/true"><strong>Show
+                        More</strong></a> -->
+                </div>
+                <div class="form-group col-md-6  text-right status-right" *ngIf="req.req_status=='Enroll'">
+                  <label><strong>ENROLLMENT</strong></label> <br>
+                  <label><span>{{(req.Child.enrl_date) | date
+                      :'MMM d, yyyy'}}</span></label><br>
+                </div>
+
+                <div class="form-group col-md-6  text-right" *ngIf="req.req_status=='Withdraw'">
+                  <label>WITHDRAWAL</label> <br>
+                  <label><span>{{(req.Child.enrl_withdrawal_date) | date :'MMM d, yyyy'}}</span></label>
+                </div>
+
+              </div>
+
+              <!-- request listing in the form of accrodian ends -->
+
+            </div>
+          </div>
+        </div>
+        <div *ngIf="itemsToDisplay && itemsToDisplay.length<=0">
+          No record found.
+        </div>
+      </div>
+      <!-- accordian ends-->
+
+
+    </div>
+
+    <!-- request listing in the form of accrodian ends -->
+    <div class="form-group col-md-12 text-center mb-0" *ngIf="isShowMore">
+      <label class="mb-0"><a class="text-active" (click)="onPageChange()">Show More</a></label>
+      <i class=" text-active pl-2 fa fa-sort-down fa-2x" (click)="onPageChange()"></i>
+    </div>
+    <!-- form ends showing request pannel fields -->
+  </div>
+</div>

@@ -1,0 +1,179 @@
+<div class="card mt-4">
+  <!-- for the side menu form starts -->
+  <div class="col-sm-12 col-md-12">
+    <article>
+      <section class="mt-2 mb-3">
+        <div class="tab-content" id="v-pills-tabContent">
+          <!-- profile form details STARTS -->
+
+          <!-- title Confirmation letter starts -->
+          <div class="card mt-4">
+            <div class="card-body">
+              <form [formGroup]="confirmationLetterForm">
+                <!-- first group starts -->
+                <div *ngIf="companyletterId" class="form-row">
+                  <!-- title dummy letter starts -->
+                  <div class="form-group col-md-6">
+                    <!-- <h5>Dummy File name</h5> -->
+                  </div>
+                  <!-- title dummy letter ends -->
+                </div>
+                <!-- first group ends -->
+                <div>
+                  <button *ngIf="confirmationLetterForm.controls.status.value=='Active'" type="button" class="btn btn-danger pull-right mr-2"
+                    (click)="onCancel()">Back</button>
+                </div>
+
+                <!-- second group starts -->
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="inputState">Issue Date</label>
+                    <div class="input-group mb-3">
+                      <!-- <input type="text" class="form-control" placeholder="May 07, 2019"> -->
+                      <input class="form-control" readonly type="text" [value]="confirmationLetterForm.controls.issue_date.value | date">
+                      <input class="form-control hidden-input" type="text" placeholder="Select Date" (change)="onIssueDateChange($event)"
+                        formControlName="issue_date" [owlDateTime]="issuePicker">
+                      <owl-date-time [pickerType]="'calendar'" #issuePicker></owl-date-time>
+                      <div class="input-group-append">
+                        <span *ngIf="confirmationLetterForm.controls.status.value=='Active'" class="input-group-text"><i class="fa fa-calendar"
+                            aria-hidden="true"></i></span>
+                        <span *ngIf="confirmationLetterForm.controls.status.value!='Active'" class="input-group-text" [owlDateTimeTrigger]="issuePicker"><i class="fa fa-calendar"
+                            aria-hidden="true"></i></span>
+                      </div>
+                    </div>
+                    <div *ngIf="confirmationLetterForm.controls['issue_date'].hasError('required') && confirmationLetterForm.controls['issue_date'].touched"
+                      class="text-danger text-left">This field is required.</div>
+                  </div>
+                </div>
+                <!-- second group ends -->
+                <!-- upload block starts -->
+                <div class="form-group col-md-4">
+                  <div class="file-upload-wrapper upload-overlay">
+                    <input *ngIf="confirmationLetterForm.controls.status.value!='Active'" accept="image/*" type="file" (change)="uploadConfirmationLetter($event.target.files)">
+                    <div [ngClass]="{'visible-no': confirmationLetterForm.controls.status.value=='Active'}" class="card card-body view file-upload">
+                      <div class="card-text file-upload-message text-center"><i class="fa fa-cloud-upload icon-grey"></i>
+                        <p class="icon-grey">Click to upload confirmation letter</p>
+                      </div>
+                    </div>
+                    <div class="overlay-text align-items-center justify-content-center text-white">
+                      <img *ngIf="image_path" width="200px" [src]="_config.ImageUrl + image_path" alt="Confirmation Letter Image">
+                    </div>
+                  </div>
+                  <div *ngIf="!image_path" class="text-danger text-left">Please upload image file. Allowed format is JPEG. Maximum size 5 MB.</div>
+                  
+                </div>
+
+                <!-- upload block ends -->
+                <!-- disabled dates from to month start -->
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="inputState">From</label>
+                    <div class="input-group mb-3">
+                      <input readonly class="form-control" type="text" placeholder="Select Month" (change)="onStartDateChange($event)"
+                        formControlName="start_month" [owlDateTime]="startPicker"
+                        [attr.disabled]="companyletterId">
+                      <owl-date-time [pickerType]="'calendar'" [startView]="'year'"
+                        (monthSelected)="chosenMonthHandler($event, startPicker, 'start')" #startPicker></owl-date-time>
+                      <div class="input-group-append">
+                        <span *ngIf="confirmationLetterForm.controls.status.value=='Active'" class="input-group-text"><i class="fa fa-calendar"
+                            aria-hidden="true"></i></span>
+                        <span *ngIf="confirmationLetterForm.controls.status.value!='Active'" class="input-group-text" [owlDateTimeTrigger]="startPicker"><i class="fa fa-calendar"
+                            aria-hidden="true"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="inputState">To</label>
+                    <div class="input-group mb-3">
+                      <input readonly class="form-control" type="text" placeholder="Select Month" (change)="onendDateChange($event)"
+                          formControlName="end_month" [owlDateTime]="endPicker" 
+                          [attr.disabled]="companyletterId">
+                        <owl-date-time [pickerType]="'calendar'" [startView]="'year'" (monthSelected)="chosenMonthHandler($event, endPicker, 'end')"
+                          #endPicker></owl-date-time>
+                      <div class="input-group-append">
+                        <span *ngIf="confirmationLetterForm.controls.status.value=='Active'" class="input-group-text"><i class="fa fa-calendar"
+                            aria-hidden="true"></i></span>
+                        <span *ngIf="confirmationLetterForm.controls.status.value!='Active'"  class="input-group-text" [owlDateTimeTrigger]="endPicker"><i class="fa fa-calendar"
+                            aria-hidden="true"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- disabled dates from to month ends -->
+               
+                <div *ngFor="let fullDetails of confirmationLetterForm['controls'].childrenApplied['controls']; let i = index"
+                  class="card mb-4">
+                  <div [formGroup]="fullDetails.controls.child" class="card-header card-bg d-flex  justify-content-between align-items-center">
+                    <h6 class="mb-0">{{fullDetails.controls.child.controls.childInfo.value.name}} 
+                      {{(fullDetails.controls.child.controls.childInfo.value.Daycare && fullDetails.controls.child.controls.childInfo.value.Daycare.name) ? '/ ' + fullDetails.controls.child.controls.childInfo.value.Daycare.name : ''}}
+                    </h6>
+                    <div>
+                      <div class="checkbox-ds1-reverse checkbox-ds1 checkbox-ds1-success"
+                        [ngbTooltip]="(fullDetails.controls.child.controls.status.value=='Active') ? 'Confirmation letter already accepted.': null">
+                        <input [disabled]="confirmationLetterForm.controls.status.value=='Active'" id="checkbox3"
+                          type="checkbox" [checked]="fullDetails.disabled" (change)="assignChild(i, $event)">
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <h6 class="card-title">Enrollment Date
+                      {{fullDetails.controls.child.controls.childInfo.value.enrl_date |
+                      date}}&nbsp;&nbsp;&nbsp;&nbsp;
+                      {{fullDetails.controls.child.controls.childInfo.value.enrl_withdrawal_date 
+                        ? 'Withdrawal Date ' + (fullDetails.controls.child.controls.childInfo.value.enrl_withdrawal_date | date)
+                        : ''
+                      }}
+                      </h6>
+                    <div class="table-responsive">
+                      <table class="table table-bordered">
+                        <tbody>
+                          <tr [formGroup]="fullDetails">
+                            <th scope="row" class="border-bottom-0">Months</th>
+                            <!-- <div [formGroup]="fullDetails.controls.child" > -->
+                            <td class="border-bottom-0" *ngFor="let childAppliedDetails of fullDetails.controls.child.controls.details.controls" [formGroup]="childAppliedDetails">
+                                <input class="tab-in-s" [attr.disabled]="true" type="text" [value]="childAppliedDetails.value.month">
+
+                                <!-- <input class="tab-in-s" disabled="" value="  "> -->
+                            </td>
+                            <td *ngIf="monthCount==0"></td>
+                            <td *ngIf="monthCount!=0" class="border-bottom-0">
+                              <button *ngIf="confirmationLetterForm.controls.status.value!='Active'" title="Remove {{fullDetails.controls.child.controls.details.value[fullDetails.controls.child.controls.details.value.length - 1].month}}" [disabled]="fullDetails.disabled" (click)="popMonth()" class="btn btn-transparent"><i class="fa fa-close red-icon"
+                                  aria-hidden="true"></i></button>
+                            </td>
+                            <!-- </div> -->
+                          </tr>
+                          <tr [formGroup]="fullDetails">
+                            <th scope="row" class="border-top-0">Amt($)</th>
+                            <td class="border-top-0" *ngFor="let childAppliedDetails of fullDetails.controls.child.controls.details.controls" [formGroup]="childAppliedDetails">
+                                <input [attr.disabled]="(fullDetails.disabled || confirmationLetterForm.controls.status.value=='Active') ? true : null" class="tab-input" numberOnlyInput autocomplete="off" formControlName="amount" maxlength="8">
+                                <!-- <input class="tab-in-s" disabled="" value="{{month.month | slice : 5 : 8}} {{month.month | slice : 0 : 4}}"> -->
+                            </td>
+                            <td class="border-top-0">
+                              <button *ngIf="confirmationLetterForm.controls.status.value!='Active'" title="Reset values to zero" [disabled]="fullDetails.disabled" (click)="resetAmountFields(i)" class="btn btn-transparent"><i class="fa fa-repeat red-icon" aria-hidden="true"></i></button>
+                            </td>
+                          </tr>
+                         
+                        </tbody>
+                      </table>
+
+                    </div>
+                  </div>
+                </div>
+                <!-- for the child cards ends  -->
+
+                <div class="from-row mt-4 text-right">
+                  <button *ngIf="confirmationLetterForm.controls.status.value!='Active'" type="button" class="btn btn-danger mr-2" (click)="onCancel()">Cancel</button>
+                  <button *ngIf="confirmationLetterForm.controls.status.value!='Active'" type="button" class="btn btn-success" (click)="onSave()" [disabled]="!confirmationLetterForm.valid || !image_path">Save Changes</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Confirmation letter ends -->
+
+        </div>
+      </section>
+    </article>
+  </div>
+</div>
